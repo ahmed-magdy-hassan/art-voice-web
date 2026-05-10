@@ -1,0 +1,30 @@
+image:
+  repository: art-voice/art-voice-web
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 3
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: app.art-voice.dev
+      paths: ['/']
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+
+env:
+  NUXT_PUBLIC_API_BASE: https://api.art-voice.dev
+  NUXT_PUBLIC_WSS_BASE: wss://api.art-voice.dev
