@@ -24,7 +24,11 @@ const onSubmit = handleSubmit(async (values) => {
     })
     emit('success', result)
   } catch (err: unknown) {
-    const message = (err as { statusMessage?: string }).statusMessage
+    // h3 surfaces the code in both the response statusText (→ ofetch
+    // err.statusMessage) and the JSON body (→ err.data.statusMessage). Prefer
+    // the body: statusText doesn't always survive proxies/interceptors.
+    const e = err as { statusMessage?: string; data?: { statusMessage?: string } }
+    const message = e.data?.statusMessage ?? e.statusMessage
     remoteError.value =
       message === 'mfa_code_invalid'
         ? 'Incorrect code. Try again or use a recovery code.'

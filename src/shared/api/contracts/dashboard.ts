@@ -1,5 +1,22 @@
 import { z } from 'zod'
 
+export const Notification = z.object({
+  id: z.string(),
+  type: z.string(),
+  title: z.string(),
+  body: z.string().optional(),
+  readAt: z.string().nullable(),
+  createdAt: z.string(),
+})
+export type Notification = z.infer<typeof Notification>
+
+export const NotificationsResponse = z.object({
+  items: z.array(Notification),
+  unreadCount: z.number(),
+  nextCursor: z.string().nullable(),
+})
+export type NotificationsResponse = z.infer<typeof NotificationsResponse>
+
 export const SparklinePoint = z.object({
   t: z.string(), // ISO date
   v: z.number(),

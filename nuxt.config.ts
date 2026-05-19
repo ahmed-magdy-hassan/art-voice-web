@@ -27,6 +27,9 @@ export default defineNuxtConfig({
     businessUrl: process.env.BUSINESS_URL || 'http://localhost:3000',
     // KAN-285: realtime token-exchange + WSS are gateway-only surfaces.
     gatewayUrl: process.env.GATEWAY_URL || 'http://localhost:8080',
+    // Sprint 5: ai-coach + ai-reco upstream URLs
+    aiCoachUrl: process.env.AI_COACH_URL || 'http://localhost:8001',
+    aiRecoUrl: process.env.AI_RECO_URL || 'http://localhost:8002',
     serviceJwtSecret: process.env.SERVICE_JWT_SECRET || '',
     public: {
       // Public site URL the BFF uses when generating absolute links.

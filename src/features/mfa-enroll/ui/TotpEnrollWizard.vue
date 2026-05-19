@@ -50,7 +50,10 @@ const onConfirm = handleSubmit(async (values) => {
     step.value = 'done'
     emit('enrolled', { recoveryCodes: result.recoveryCodes })
   } catch (err: unknown) {
-    const message = (err as { statusMessage?: string }).statusMessage
+    // Prefer the JSON body's statusMessage over statusText (ofetch
+    // err.statusMessage) — statusText doesn't always survive every hop.
+    const e = err as { statusMessage?: string; data?: { statusMessage?: string } }
+    const message = e.data?.statusMessage ?? e.statusMessage
     remoteError.value =
       message === 'mfa_code_invalid'
         ? 'Code is incorrect. Check your authenticator app and try again.'

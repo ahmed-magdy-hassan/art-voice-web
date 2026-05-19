@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  Bell,
   Calendar,
   ChevronDown,
   Home,
@@ -36,6 +35,8 @@ import {
 } from '@/shared/ui'
 import { useTheme } from '@/shared/lib/use-theme'
 import { useAuth } from '@/entities/user'
+import { NotificationBell } from '@/features/notifications'
+import { CommandPalette, type CommandItem } from '@/shared/ui'
 
 interface Props {
   title: string
@@ -85,6 +86,35 @@ async function signOut() {
     window.location.href = '/sign-in'
   }
 }
+
+// Command palette
+const paletteOpen = ref(false)
+
+const paletteItems = computed<CommandItem[]>(() => [
+  ...navItems.map((n) => ({
+    id: `nav-${n.to}`,
+    label: n.label,
+    group: 'Navigate',
+    onSelect: () => router.push(n.to),
+  })),
+  ...settingsItems.map((n) => ({
+    id: `settings-${n.to}`,
+    label: n.label,
+    group: 'Settings',
+    onSelect: () => router.push(n.to),
+  })),
+  { id: 'new-upload', label: 'Upload audio', group: 'Actions', hint: '⌘U', onSelect: () => router.push('/upload') },
+  { id: 'live-session', label: 'Start live session', group: 'Actions', onSelect: () => router.push('/live') },
+])
+
+function onKeydown(e: KeyboardEvent) {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault()
+    paletteOpen.value = true
+  }
+}
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 const navItems = [
   { to: '/', icon: Home, label: 'Home' },
@@ -137,7 +167,7 @@ const savedViews = [
         </DropdownMenuRoot>
       </div>
 
-      <button class="shell-search" type="button">
+      <button class="shell-search" type="button" @click="paletteOpen = true">
         <span class="inline-flex"><Search :size="14" /></span>
         <span>Search</span>
         <span class="ml-auto flex gap-[3px]">
@@ -266,9 +296,7 @@ const savedViews = [
           <slot name="top-right">
             <LatencyBadge :ms="148" />
             <Badge tone="accent" class="badge-mono">ATLAS·0·7</Badge>
-            <button type="button" class="btn-icon" aria-label="Notifications">
-              <Bell :size="14" />
-            </button>
+            <NotificationBell />
             <button type="button" class="btn btn-secondary btn-sm">
               <Calendar :size="12" /> Today
             </button>
@@ -295,4 +323,6 @@ const savedViews = [
       </div>
     </div>
   </div>
+
+  <CommandPalette v-model:open="paletteOpen" :items="paletteItems" />
 </template>
