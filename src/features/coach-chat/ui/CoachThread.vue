@@ -19,7 +19,7 @@ async function submit() {
 function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault()
-    submit()
+    void submit()
   }
 }
 

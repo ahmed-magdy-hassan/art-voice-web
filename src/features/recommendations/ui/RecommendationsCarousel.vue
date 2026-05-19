@@ -52,44 +52,45 @@ function difficultyLabel(d: number) {
 
     <div v-if="loading" class="skeleton" aria-label="Loading recommendations" />
 
-    <TransitionGroup v-else name="slide" tag="div" class="cards-viewport">
+    <Transition v-else name="slide" mode="out-in">
       <article
-        v-for="(rec, i) in recommendations"
-        v-show="i === activeIdx"
-        :key="rec.exercise.exercise_id"
+        v-if="recommendations[activeIdx]"
+        :key="recommendations[activeIdx]!.exercise.exercise_id"
         class="card"
-        :style="{ background: colors(rec.exercise.category).bg }"
+        :style="{ background: colors(recommendations[activeIdx]!.exercise.category).bg }"
         role="listitem"
       >
-        <div class="card-top">
-          <div class="category-chip" :style="{ color: colors(rec.exercise.category).text }">
-            <span class="dot" :style="{ background: colors(rec.exercise.category).dot }" />
-            {{ rec.exercise.category.replace('_', ' ') }}
+        <template v-if="recommendations[activeIdx]">
+          <div class="card-top">
+            <div class="category-chip" :style="{ color: colors(recommendations[activeIdx]!.exercise.category).text }">
+              <span class="dot" :style="{ background: colors(recommendations[activeIdx]!.exercise.category).dot }" />
+              {{ recommendations[activeIdx]!.exercise.category.replace('_', ' ') }}
+            </div>
+            <div class="score-badge" :title="`Relevance score: ${(recommendations[activeIdx]!.score * 100).toFixed(0)}%`">
+              {{ (recommendations[activeIdx]!.score * 100).toFixed(0) }}% match
+            </div>
           </div>
-          <div class="score-badge" :title="`Relevance score: ${(rec.score * 100).toFixed(0)}%`">
-            {{ (rec.score * 100).toFixed(0) }}% match
+
+          <h3 class="card-title">{{ recommendations[activeIdx]!.exercise.title }}</h3>
+          <p class="card-desc">{{ recommendations[activeIdx]!.exercise.description }}</p>
+          <p class="card-rationale">{{ recommendations[activeIdx]!.rationale }}</p>
+
+          <div class="card-meta">
+            <span class="meta-chip">{{ recommendations[activeIdx]!.exercise.duration_minutes }}min</span>
+            <span class="meta-chip">{{ difficultyLabel(recommendations[activeIdx]!.exercise.difficulty) }}</span>
           </div>
-        </div>
 
-        <h3 class="card-title">{{ rec.exercise.title }}</h3>
-        <p class="card-desc">{{ rec.exercise.description }}</p>
-        <p class="card-rationale">{{ rec.rationale }}</p>
-
-        <div class="card-meta">
-          <span class="meta-chip">{{ rec.exercise.duration_minutes }}min</span>
-          <span class="meta-chip">{{ difficultyLabel(rec.exercise.difficulty) }}</span>
-        </div>
-
-        <button
-          type="button"
-          class="action-btn"
-          :style="{ background: colors(rec.exercise.category).dot, color: '#fff' }"
-          @click="emit('start', rec.exercise.exercise_id)"
-        >
-          {{ rec.action_label }}
-        </button>
+          <button
+            type="button"
+            class="action-btn"
+            :style="{ background: colors(recommendations[activeIdx]!.exercise.category).dot, color: '#fff' }"
+            @click="emit('start', recommendations[activeIdx]!.exercise.exercise_id)"
+          >
+            {{ recommendations[activeIdx]!.action_label }}
+          </button>
+        </template>
       </article>
-    </TransitionGroup>
+    </Transition>
 
     <div class="dots" role="tablist" aria-label="Exercise pages">
       <button
@@ -155,8 +156,8 @@ function difficultyLabel(d: number) {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-.cards-viewport { position: relative; min-height: 14rem; }
 .card {
+  min-height: 14rem;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;

@@ -47,9 +47,9 @@ export async function aiCoachFetch<T>(
     schema?: z.ZodType<T>
   } = {},
 ): Promise<T> {
-  const config = useRuntimeConfig()
+  const { aiCoachUrl } = useRuntimeConfig()
   const data = await $fetch(path, {
-    baseURL: (config as Record<string, unknown>).aiCoachUrl as string,
+    baseURL: aiCoachUrl as string,
     method: init.method ?? 'GET',
     body: init.body,
     headers: init.headers,
@@ -67,9 +67,9 @@ export async function aiRecoFetch<T>(
     schema?: z.ZodType<T>
   } = {},
 ): Promise<T> {
-  const config = useRuntimeConfig()
+  const { aiRecoUrl } = useRuntimeConfig()
   const data = await $fetch(path, {
-    baseURL: (config as Record<string, unknown>).aiRecoUrl as string,
+    baseURL: aiRecoUrl as string,
     method: init.method ?? 'GET',
     body: init.body,
     headers: init.headers,
